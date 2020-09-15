@@ -36,7 +36,7 @@ type
     procedure AddParameterForInvokable( const AValue: Variant ); overload;
     { Properties }
     property Invokable: boolean read Get_Invokable;
-    property name: string read Get_Name;
+    property Name: string read Get_Name;
     property ParameterCount: integer read Get_ParameterCount;
     property ParameterValues[AIndex: integer]: Variant read Get_ParameterValue; default;
     property Receiver: string read Get_Receiver;
