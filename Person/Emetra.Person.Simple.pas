@@ -11,7 +11,7 @@ uses
 type
   EPersonNotFoundException = class( Exception );
 
-  TSimplePerson = class( TInterfacedPersistent, IPersonReadOnly, IPersonIdentity )
+  TSimplePerson = class( TInterfacedPersistent, IPersonReadOnly, IPersonId, IPersonIdentity )
   private
     fPersonId: integer;
     fDOB: TDate;
