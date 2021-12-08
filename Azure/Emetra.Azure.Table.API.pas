@@ -337,14 +337,10 @@ begin
                 successfulOperation := TryInsert( azTableRow );
             end;
         end;
-        if not successfulOperation then
-        begin
-          inc( AErrors )
-        end
+        if successfulOperation then
+          inc( fRowsPublished )
         else
-        begin
-          inc( fRowsPublished );
-        end;
+          inc( AErrors );
 {$IFDEF Console}
         write( fRowChar );
 {$ENDIF}
