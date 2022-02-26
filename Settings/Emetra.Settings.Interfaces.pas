@@ -64,6 +64,28 @@ type
     function ReadString( const AKey: string; const ADefault: string = '' ): string;
   end;
 
+  IContextSettingsRead = interface
+    ['{823CE9EA-2E01-48BC-97F9-280B8E1B071A}']
+    /// <summary>
+    ///   Returns true if there is a setting of this type present in the
+    ///   configuration.
+    /// </summary>
+    /// <param name="AKey">
+    ///   The name of the setting in the setting dictionary.
+    /// </param>
+    /// <remarks>
+    ///   The function can return false even if it AKey represents a valid
+    ///   setting key. It only returns true if this setting has actually been
+    ///   set to something. <br />
+    /// </remarks>
+    function Exists( const AContext, AKey: string ): boolean;
+    function ReadBool( const AContext, AKey: string; const ADefault: boolean = false ): boolean;
+    function ReadDate( const AContext, AKey: string; const ADefault: TDateTime ): TDateTime;
+    function ReadInteger( const AContext, AKey: string; const ADefault: Integer = 0 ): Integer;
+    function ReadFloat( const AContext, AKey: string; const ADefault: double = 0 ): double;
+    function ReadString( const AContext, AKey: string; const ADefault: string = '' ): string;
+  end;
+
   /// <summary>
   ///   A more general way to get the settings, where the scope of the setting
   ///   needs to be specified.
