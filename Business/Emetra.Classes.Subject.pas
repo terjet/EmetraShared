@@ -12,7 +12,6 @@ interface
 
 uses
   Emetra.Interfaces.Observer,
-  Emetra.TemplateVariable.Interfaces,
   Emetra.Dictionary.Interfaces,
   Emetra.Logging.Interfaces,
   {VCL}
