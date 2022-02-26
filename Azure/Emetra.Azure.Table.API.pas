@@ -453,7 +453,7 @@ var
 begin
   dsField := ADataset.FieldByName( 'RowKey' );
   Assert( Assigned( dsField ), 'The RowKey field was not found in the dataset' );
-  { The row key field with appear twice in the Azure table, under its original name and under the name RowKey }
+  { The row key field will appear twice in the Azure table, under its original name and under the name RowKey }
   if dsField.DataType = ftGuid then
     ATableRow.RowKeyValue := Copy( dsField.AsString, 2, 36 )
   else

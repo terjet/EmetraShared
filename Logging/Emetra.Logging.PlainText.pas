@@ -22,7 +22,7 @@ const
 
 type
   { Summary:
-    The TLogObject class provides useful logging facilities for any application. }
+    The TPlainTextLog class provides useful logging facilities for any application. }
 
   TPlainTextLog = class( TLogAdapter, ILog, ILogItemList, ILogMultitarget )
   strict private
