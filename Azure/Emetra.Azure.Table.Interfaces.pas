@@ -23,8 +23,7 @@ type
     procedure Set_BreakOnConflict( const AValue: boolean );
     { Other members }
     procedure PublishDataset( const ADataset: TDataset; const ATableName: string; out ARowsAdded: integer ); overload;
-    procedure PublishDataset( const ADataset: TDataset; const ATableName: string; const AUpdateStrategy: TEntityUpdateStrategy;
-      const AMaxRows, AMaxErrors: integer; out AErrors: integer ); overload;
+    procedure PublishDataset( const ADataset: TDataset; const ATableName: string; const AUpdateStrategy: TEntityUpdateStrategy; const AMaxRows, AMaxErrors: integer; out AErrors: integer ); overload;
     procedure Dispose;
     procedure SetCenterId( const ACenterId: integer );
     { Properties }
@@ -53,7 +52,6 @@ type
     function ApiKey: string;
   end;
 
-
 const
   { Status codes frequently returned from the Azure table service }
 
@@ -62,6 +60,7 @@ const
   HTTP_BAD_REQUEST = 400;
   HTTP_NOT_FOUND   = 404;
   HTTP_CONFLICT    = 409;
+  HTTP_UNSUPPORTED = 501;
 
 const
   /// <comment>
@@ -71,12 +70,12 @@ const
   EDM_NULL           = 'Null';
   EDM_BINARY         = 'Edm.Binary';
   EDM_BOOLEAN        = 'Edm.Boolean';
-  EDM_BYTE           = 'Edm.Byte';
   EDM_DATETIME       = 'Edm.DateTime';
   EDM_DOUBLE         = 'Edm.Double';
   EDM_SINGLE         = 'Edm.Single';
   EDM_GUID           = 'Edm.Guid';
   EDM_INT32          = 'Edm.Int32';
+  EDM_INT64          = 'Edm.Int64';
   EDM_SBYTE          = 'Edm.SByte';
   EDM_STRING         = 'Edm.String';
   EDM_TIME           = 'Edm.Time';
@@ -86,7 +85,7 @@ const
 {$IFDEF ShowUnsupported}
   EDM_DECIMAL = 'Edm.Decimal'; { Not supported on Azure Tables }
   EDM_INT16   = 'Edm.Int16';
-  EDM_INT64   = 'Edm.Int64';
+  EDM_BYTE    = 'Edm.Byte';
 
 {$ENDIF}
 
