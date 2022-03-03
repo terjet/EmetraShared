@@ -51,12 +51,17 @@ const
   KEY_LOG_SERVER  = 'GrayLogServer';
 
 const
+{ Recognizion of database statements }
   RGX_DB_OBJECT        = '(?<=\s)[a-z][a-z0-9]+(\.[a-z][a-z0-9]+)?';
   RGX_STORED_PROCEDURE = 'EXEC\s*' + RGX_DB_OBJECT;
   RGX_SELECT_STATEMENT = 'SELECT\s+.*FROM\s*' + RGX_DB_OBJECT;
-  RGX_NUMBER           = '\d+([\.,]\d+)?';
-  RGX_ANONYMIZE_THIS   = '\{\{.*\}\}';
+  { Recognize timing info }
   RGX_MILLISECONDS     = RGX_NUMBER + '\s?ms([^\w]|$)';
+  { Recognize numbers }
+  RGX_NUMBER           = '\d+([\.,]\d+)?';
+  { Text put into handlebars should be anonymized before sending it off the Graylog }
+  RGX_ANONYMIZE_THIS   = '\{\{.*\}\}';
+  { Recognize Key=Value pairs }
   RGX_KEY              = '\p{L}+[\w\.]*'; { Starts with letter, may contain periods }
   RGX_VALUE            = '("[^"]*"|[^\p{Z}\p{C},;]*)'; { Either quoted, capturing all non-quote characters, or all visible characters, except commas and semicolons }
   RGX_KEY_VALUE_PAIR   = '(' + RGX_KEY + ')\s*=\s*(' + RGX_VALUE + ')';
@@ -77,7 +82,7 @@ uses
   System.DateUtils, System.StrUtils, System.SysUtils;
 
 resourcestring
-  rsAnonymized = '<anonymisert>';
+  rsAnonymized = '<anonymized>';
 
 {$REGION 'Initialization'}
 
@@ -114,7 +119,7 @@ begin
 end;
 
 {$ENDREGION}
-{$REGION 'ILogTarget'}
+{$REGION 'ILogItemTarget'}
 
 function TGrayLogDispatcher.URI: string;
 var
