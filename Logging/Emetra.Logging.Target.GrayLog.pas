@@ -55,10 +55,10 @@ const
   RGX_DB_OBJECT        = '(?<=\s)[a-z][a-z0-9]+(\.[a-z][a-z0-9]+)?';
   RGX_STORED_PROCEDURE = 'EXEC\s*' + RGX_DB_OBJECT;
   RGX_SELECT_STATEMENT = 'SELECT\s+.*FROM\s*' + RGX_DB_OBJECT;
-  { Recognize timing info }
-  RGX_MILLISECONDS     = RGX_NUMBER + '\s?ms([^\w]|$)';
   { Recognize numbers }
   RGX_NUMBER           = '\d+([\.,]\d+)?';
+  { Recognize timing info }
+  RGX_MILLISECONDS     = RGX_NUMBER + '\s?ms([^\w]|$)';
   { Text put into handlebars should be anonymized before sending it off the Graylog }
   RGX_ANONYMIZE_THIS   = '\{\{.*\}\}';
   { Recognize Key=Value pairs }
