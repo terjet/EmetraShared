@@ -52,6 +52,8 @@ type
     property VisualId: string read Get_VisualId;
   end;
 
+function MaskNationalId( const ANationalId: string ): string;
+
 implementation
 
 uses
@@ -167,6 +169,11 @@ begin
     finally
       Close;
     end;
+end;
+
+function MaskNationalId( const ANationalId: string ): string;
+begin
+  Result := Copy( ANationalId, 1, 6 ) + 'XXXXX';
 end;
 
 end.
