@@ -63,10 +63,13 @@ type
     { Writable }
     procedure WriteFloat( const AKey: string; const AValue: double );
     procedure WriteBool( const AKey: string; const AValue: boolean );
+    procedure WriteString( const AKey: string; const AValue: string );
+    procedure WriteInteger( const AKey: string; const AValue: integer );
 
     { Checks to see if a key exists }
     function Exists( const AKey: string ): boolean;
     function Text: string;
+    procedure AddFlag( const AFlag: string );
     procedure Clear;
     procedure Parse( const AParamStr: string );
     procedure ParseCommandLine;
@@ -77,6 +80,8 @@ type
 implementation
 
 { TParamList }
+
+{$REGION 'Initialization'}
 
 constructor TParamList.Create;
 begin
@@ -104,10 +109,7 @@ begin
   inherited;
 end;
 
-function TParamList.Count: integer;
-begin
-  Result := FData.Count;
-end;
+{$ENDREGION}
 
 procedure TParamList.ParseCommandLine;
 var
@@ -117,6 +119,11 @@ begin
   for n := 0 to ParamCount do
     FData.Add( ParamStr( n ) );
   Parse( FData.Text );
+end;
+
+function TParamList.Count: integer;
+begin
+  Result := FData.Count;
 end;
 
 function TParamList.Exists( const AKey: string ): boolean;
@@ -210,14 +217,33 @@ begin
   Result := FData.Text;
 end;
 
+{$REGION 'Writing to the settings'}
+
+procedure TParamList.AddFlag( const AFlag: string );
+begin
+  FData.Add( AFlag );
+end;
+
 procedure TParamList.WriteFloat( const AKey: string; const AValue: double );
 begin
-  FData.Values[AKey] := FloatToStr( AValue );
+  FData.Values[AKey] := AValue.ToString;
 end;
 
 procedure TParamList.WriteBool( const AKey: string; const AValue: boolean );
 begin
   FData.Values[AKey] := BoolToStr( AValue, true );
 end;
+
+procedure TParamList.WriteInteger( const AKey: string; const AValue: integer );
+begin
+  FData.Values[AKey] := AValue.ToString;
+end;
+
+procedure TParamList.WriteString( const AKey, AValue: string );
+begin
+  FData.Values[AKey] := AValue;
+end;
+
+{$ENDREGION}
 
 end.
