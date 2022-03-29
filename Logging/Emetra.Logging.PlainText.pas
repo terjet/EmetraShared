@@ -1,4 +1,9 @@
-﻿unit Emetra.Logging.PlainText;
+﻿/// <summary>
+/// Writes logs to plain text files.  The number of files is 10 per user by default.
+/// To increase the number of files, add a "Global" section to the logging.ini file in the log folder,
+/// and set MaxFile=n where n is the number of files to write before rotating.
+///</summary>
+unit Emetra.Logging.PlainText;
 
 {$WARN SYMBOL_PLATFORM OFF}
 
