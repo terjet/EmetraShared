@@ -35,7 +35,7 @@ type
     function Get_VisualId: string;
     { Other members }
     function ShortId: string;
-    function Valid: boolean;
+    function Valid: boolean; virtual;
   public
     procedure Clear;
     procedure MapId( const ASQL: ISQL );
@@ -151,7 +151,7 @@ end;
 
 function TSimplePerson.Valid: boolean;
 begin
-  Result := ( fPersonId > 0 ) and ( fDOB > 0 ) and ( fLstName <> EmptyStr ) and ( fLstName <> EmptyStr );
+  Result := ( fPersonId > 0 ) and ( fDOB > 0 ) and ( fFstName <> EmptyStr ) and ( fLstName <> EmptyStr );
 end;
 
 procedure TSimplePerson.MapId( const ASQL: ISQL );
