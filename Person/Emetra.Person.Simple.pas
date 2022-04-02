@@ -37,7 +37,7 @@ type
     function ShortId: string;
     function Valid: boolean; virtual;
   public
-    procedure Clear;
+    procedure Clear; virtual;
     procedure MapId( const ASQL: ISQL );
     { Prioerties }
     property Age: double read Get_Age;
