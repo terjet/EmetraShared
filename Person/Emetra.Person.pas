@@ -62,6 +62,8 @@ type
     procedure Set_NationalId( const Value: string );
     procedure Set_PersonId( const Value: integer );
     procedure Set_Phone( const Value: string );
+    procedure Set_PostCode( const Value: string );
+    procedure Set_City( const Value: string );
     procedure Set_Sex( Value: TSex );
   public
     Tag: integer;
@@ -93,8 +95,8 @@ type
     property VisualId: string read Get_VisualId;
     property YOB: integer read Get_YOB;
     { Geographical data }
-    property City: string read Get_City;
-    property PostCode: string read Get_PostCode;
+    property City: string read Get_City write Set_City;
+    property PostCode: string read Get_PostCode write Set_PostCode;
     property StreetAddress: string read fStreetAddress;
     { Contact info }
     property Email: string read fEmail write Set_Email;
@@ -276,6 +278,18 @@ begin
   Result := ( FSex = sexMale );
 end;
 
+procedure TPerson.Set_City( const Value: string );
+begin
+  if Value = fCity then
+    exit;
+  BeginUpdate;
+  try
+    fCity := Value;
+  finally
+    EndUpdate;
+  end;
+end;
+
 procedure TPerson.Set_DOB( const Value: TDate );
 begin
   if Value = FDOB then
@@ -415,6 +429,18 @@ begin
   BeginUpdate;
   try
     fPhone := Value
+  finally
+    EndUpdate;
+  end;
+end;
+
+procedure TPerson.Set_PostCode( const Value: string );
+begin
+  if Value = fPostalCode then
+    exit;
+  BeginUpdate;
+  try
+    fPostalCode := Value;
   finally
     EndUpdate;
   end;
