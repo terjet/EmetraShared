@@ -35,7 +35,7 @@ type
     function Get_VisualId: string;
     { Other members }
     function ShortId: string;
-    function Valid: boolean;
+    function Valid: boolean; virtual;
   public
     procedure Clear;
     procedure MapId( const ASQL: ISQL );
