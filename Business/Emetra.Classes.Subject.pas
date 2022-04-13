@@ -20,18 +20,20 @@ uses
 
 type
 
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// Intented to replace TObject and TInterfacedObject as a generic base class that also adds the ability to respond
   /// to a macro handler.
   /// </summary>
-  {$ENDREGION}
+{$ENDREGION}
   TExposed = class( TInterfacedPersistent, IVariantDictionary )
   strict private
     FAfterConstructionCalled: boolean;
     FBeforeDestructionCalled: boolean;
+{$IFDEF Audit}
   private
     procedure CheckForMultipleSingletons;
+{$ENDIF}
   protected
     FSingleton: boolean;
     function Get_Persistent: boolean;
@@ -60,7 +62,7 @@ type
     property Log: ILog read Get_Log implements ILog;
   end;
 
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// Simple base class for implementation of the Observer pattern.  Use this class to inherit the ability to notify
   /// a list of observers of changes to the instance.
@@ -73,7 +75,7 @@ type
   /// Please note that TObservable is a persistent class, similar to TObject and unlike TInterfacedObject.
   /// </para>
   /// </remarks>
-  {$ENDREGION}
+{$ENDREGION}
 
   TObservable = class( TExposedLogged, IObservable )
   strict private
@@ -89,7 +91,7 @@ type
     { Initialization }
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
-    { Other members  }
+    { Other members }
     function Updating: boolean;
     procedure Attach( AObserver: IListener ); dynamic;
     procedure Detach( AObserver: IListener ); dynamic;
@@ -120,7 +122,7 @@ type
     property Count: integer read Get_Count;
   end;
 
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// Identical to TObservable, except that it is always reference counted, and uses the Owner when it broadcasts
   /// updates to the observer list.
@@ -129,7 +131,7 @@ type
   /// Should only be used through its interface, and only as part of a composition.  Instead of notifying observers
   /// about itself, it notifies with the FController as the Sender parameter.
   /// </remarks>
-  {$ENDREGION}
+{$ENDREGION}
 
   TContainedObservable = class( TObservable, IObservable )
   strict private
@@ -143,8 +145,10 @@ type
 implementation
 
 uses
+{$IFDEF Audit}
   Emetra.Classes.Auditing,
-  SysUtils, TypInfo, Math;
+{$ENDIF}
+  System.SysUtils, System.TypInfo, System.Math;
 
 resourcestring
   SMultipleSingletons = 'Class %s should be Singleton';
@@ -155,48 +159,55 @@ resourcestring
   SNotifyObservers = 'NotifyObserver';
 
 type
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// The exception is raised when there is an attempt to create more than one instance of an object that should be a
   /// singleton.
   /// </summary>
-  {$ENDREGION}
+{$ENDREGION}
   ESingletonException = class( Exception );
 
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// This exception is raised when the global class counter thinks that there are no more live instances of this
   /// class.
   /// </summary>
-  {$ENDREGION}
+{$ENDREGION}
   EInstanceMissing = class( Exception );
 
-  {$REGION 'Documentation'}
+{$REGION 'Documentation'}
   /// <summary>
   /// This exception is raised when EndUpdate or Clear is called with no matching BeginUpdate.
   /// </summary>
-  {$ENDREGION}
+{$ENDREGION}
   EMissingBeginUpdate = class( Exception );
 
-  {$REGION 'TBaseObject'}
+{$REGION 'TBaseObject'}
 
 procedure TExposed.AfterConstruction;
 begin
   inherited;
   Assert( FAfterConstructionCalled = false );
   FAfterConstructionCalled := true;
+{$IFDEF Audit}
   CheckForMultipleSingletons;
+{$ENDIF}
   VerifyConstructorParameters;
+{$IFDEF Audit}
   GlobalClassCounter.AddInstance( Self.QualifiedClassName );
+{$ENDIF}
 end;
 
 procedure TExposed.BeforeDestruction;
+{$IFDEF Audit}
 var
   preExistingInstances: integer;
+{$ENDIF}
 begin
   Assert( FAfterConstructionCalled = true, Format( 'AfterConstruction not called for %s', [ClassName] ) );
   Assert( FBeforeDestructionCalled = false, Format( 'BeforeDestruction called already for %s', [ClassName] ) );
   FBeforeDestructionCalled := true;
+{$IFDEF Audit}
   preExistingInstances := GlobalClassCounter[Self.QualifiedClassName];
   GlobalClassCounter.RemoveInstance( Self.QualifiedClassName );
   if preExistingInstances = 0 then
@@ -206,6 +217,7 @@ begin
     else
       raise EInstanceMissing.CreateFmt( SInstanceNotFound, [Self.QualifiedClassName] );
   end;
+{$ENDIF}
   inherited;
 end;
 
@@ -231,6 +243,8 @@ begin
   end;
 end;
 
+{$IFDEF Audit}
+
 procedure TExposed.CheckForMultipleSingletons;
 var
   preExistingInstances: integer;
@@ -247,6 +261,7 @@ begin
     end;
   end;
 end;
+{$ENDIF}
 
 function TExposed.TryGetValue( const AVarName: string; var AValue: variant ): boolean;
 begin
@@ -273,11 +288,15 @@ procedure TObservable.BeforeDestruction;
 begin
   if Assigned( FObservers ) then
   begin
-    {$IFDEF Debug}
+{$IFDEF Debug}
     if ( FObservers.Count > 0 ) and Assigned( GlobalLog ) then
       GlobalLog.SilentWarning( SObserversStillAttached, [Controller.QualifiedClassName, FObservers.Count] );
-    {$ENDIF}
+{$ENDIF}
+{$IFDEF Audit}
     SafeFree( FObservers );
+{$ELSE}
+    FObservers.Free;
+{$ENDIF}
   end;
   inherited;
 end;
@@ -296,37 +315,37 @@ begin
   newObject := TObject( AObserver );
   if FObservers.IndexOf( newObject ) = -1 then
   begin
-    {$IFDEF Debug}
+{$IFDEF Debug}
     Log.Event( LOG_ATTACHMENT, [Controller.ClassName, newObject.QualifiedClassName, 'Added'] );
-    {$ENDIF}
+{$ENDIF}
     FObservers.Add( AObserver as TObject );
   end
   else
-    Log.SilentWarning( LOG_ATTACHMENT, [Controller.ClassName, newObject.QualifiedClassName, 'Added before, will not add again.' ] );
+    Log.SilentWarning( LOG_ATTACHMENT, [Controller.ClassName, newObject.QualifiedClassName, 'Added before, will not add again.'] );
 end;
 
 procedure TObservable.Detach( AObserver: IListener );
 begin
-  {$IFDEF Debug}
-  Log.Event( '%s.Detach(%s)', [Controller.ClassName, TObject( AObserver ).QualifiedClassName ] );
-  {$ENDIF}
+{$IFDEF Debug}
+  Log.Event( '%s.Detach(%s)', [Controller.ClassName, TObject( AObserver ).QualifiedClassName] );
+{$ENDIF}
   FObservers.Remove( AObserver as TObject );
 end;
 
 procedure TObservable.DetachAll;
 begin
-  {$IFDEF Debug}
+{$IFDEF Debug}
   Log.Event( '%s.DetachAll(n=%d)', [Controller.ClassName, FObservers.Count] );
-  {$ENDIF}
+{$ENDIF}
   FObservers.Clear;
 end;
 
 procedure TObservable.Clear;
 begin
-  {$IFDEF Debug}
+{$IFDEF Debug}
   if FUpdateLevel < 1 then
     raise EMissingBeginUpdate.CreateFmt( SClearWithoutBeginUpdate, [ClassName] );
-  {$ENDIF}
+{$ENDIF}
 end;
 
 function TObservable.Controller: TObject;
@@ -341,15 +360,15 @@ end;
 
 procedure TObservable.CancelUpdate;
 begin
-  dec( FUpdateLevel);
+  dec( FUpdateLevel );
 end;
 
 procedure TObservable.EndUpdate;
 begin
-  {$IFDEF Debug}
+{$IFDEF Debug}
   if FUpdateLevel < 1 then
     raise EMissingBeginUpdate.CreateFmt( SExtraEndUpdate, [ClassName] );
-  {$ENDIF}
+{$ENDIF}
   if FUpdateLevel > 0 then
     dec( FUpdateLevel );
   if ( FUpdateLevel = 0 ) then
@@ -371,15 +390,15 @@ begin
     while observerIndex < FObservers.Count do
     begin
       if Supports( FObservers[observerIndex], IListener, thisObserver ) then
-      try
-        {$IFDEF Debug}
-        Log.Event( LOG_CALL, [Controller.ClassName, observerIndex, TObject( thisObserver ).QualifiedClassName] );
-        {$ENDIF}
-        Notify( thisObserver );
-      except
-        on E: Exception do
-          Log.SilentError( LOG_CALL, [Controller.ClassName, observerIndex, E.Message] );
-      end;
+        try
+{$IFDEF Debug}
+          Log.Event( LOG_CALL, [Controller.ClassName, observerIndex, TObject( thisObserver ).QualifiedClassName] );
+{$ENDIF}
+          Notify( thisObserver );
+        except
+          on E: Exception do
+            Log.SilentError( LOG_CALL, [Controller.ClassName, observerIndex, E.Message] );
+        end;
       inc( observerIndex );
     end;
   finally
@@ -491,9 +510,6 @@ begin
   FOwnedObjects.Sort( ACompareProc );
 end;
 
-{$ENDREGION]
-
-{$REGION 'Singleton versions of objects' }
-{ TDatabaseSubject }
+{$ENDREGION}
 
 end.
