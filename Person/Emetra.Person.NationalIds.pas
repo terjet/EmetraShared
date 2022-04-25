@@ -11,7 +11,7 @@ type
   TNorwegianNationalId = class
   public
     class var RetryCount: integer;
-    class function Generate(): string; overload;
+    class function Generate( ): string; overload;
     class function Generate( const ADOB: TDateTime; const AGenderId: integer; ASeed: integer = 0 ): string; overload;
     class function GenderId( const s: string ): integer;
     class function Parse( const s: string; out ADOB: TDateTime; out AGenderId, ANumber: integer ): boolean;
@@ -107,9 +107,9 @@ begin
 
 end;
 
-class function TNorwegianNationalId.Generate(): string;
+class function TNorwegianNationalId.Generate( ): string;
 begin
-  Result := Generate( Now - Random( 365*110 ), 1 + Random(2) );
+  Result := Generate( Now - Random( 365 * 110 ), 1 + Random( 2 ) );
 end;
 
 class function TNorwegianNationalId.Valid( const s: string ): boolean;
@@ -118,19 +118,22 @@ var
   iCheck1, iCheck2: integer;
 begin
   Result := false;
-  if Length( s ) <> 11 then exit;
+  if Length( s ) <> 11 then
+    exit;
   try
     iCheck1 := 0;
     iCheck2 := 0;
     for i := 1 to 11 do
     begin
       n := StrToIntDef( s[i], -1 );
-      if n=-1 then exit;
+      if n = -1 then
+        exit;
       iCheck1 := iCheck1 + n * WEIGHT1[i];
       iCheck2 := iCheck2 + n * WEIGHT2[i];
     end;
     Result := ( iCheck1 mod 11 = 0 ) and ( iCheck2 mod 11 = 0 );
-  except on Exception do
+  except
+    on Exception do
   end;
 end;
 
@@ -149,7 +152,8 @@ begin
       ANumberAsInt := StrToInt( Copy( strNum, 7, 5 ) );
       Result := true;
     end;
-  except on Exception do
+  except
+    on Exception do
       Result := false;
   end;
 end;
@@ -171,10 +175,13 @@ begin
       if iMonth > 40 then
         iMonth := iMonth - 40;
       iCentury := StrToInt( Copy( s, 7, 1 ) ) div 5;
+      if InRange( iYear, 40, 99 ) and ( iCentury = 1 ) then
+        iCentury := 0;
       AGenderId := 2 - StrToInt( Copy( s, 9, 1 ) ) mod 2;
       ADOB := EncodeDate( iYear + 1900 + iCentury * 100, iMonth, iDate );
       ANumber := StrToInt( Copy( s, 7, 5 ) );
-  except on Exception do
+    except
+      on Exception do
         Result := false;
     end;
 end;
