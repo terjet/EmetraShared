@@ -14,6 +14,7 @@ type
     class function Generate( ): string; overload;
     class function Generate( const ADOB: TDateTime; const AGenderId: integer; ASeed: integer = 0 ): string; overload;
     class function GenderId( const s: string ): integer;
+    class function MaskLastFive( const s: string ): string;
     class function Parse( const s: string; out ADOB: TDateTime; out AGenderId, ANumber: integer ): boolean;
     class function Valid( const s: string ): boolean; overload;
     class function PossibleDNumber( const s: string ): boolean;
@@ -105,6 +106,11 @@ begin
 
   until Valid( Result ) or ( retryCounter >= RetryCount );
 
+end;
+
+class function TNorwegianNationalId.MaskLastFive( const s: string ): string;
+begin
+  Result := s.Substring( 1, 6 ) + '00000';
 end;
 
 class function TNorwegianNationalId.Generate( ): string;
