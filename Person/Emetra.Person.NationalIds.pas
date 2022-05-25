@@ -114,7 +114,7 @@ end;
 
 class function TNorwegianNationalId.MaskLastFive( const s: string ): string;
 begin
-  Result := s.Substring( 1, 6 ) + '00000';
+  Result := s.Substring( 0, 6 ) + '00000';
 end;
 
 class function TNorwegianNationalId.Generate( ): string;
