@@ -168,7 +168,7 @@ function SexToStr( const ASex: TSex ): string;
 
 const
   { Regular expressions for searching in a list of persons }
-  RGX_DATE              = '^(\d{6}|\d{2}\.\d{2}\.\d{2,4})';
+  RGX_DATE              = '^[0123]\d\.?[01]\d\.?(18|19|20)?\d{2}';
   RGX_VALID_DOB         = RGX_DATE + '$';
   RGX_VALID_NATIONAL_ID = '^\d{11}$';
   RGX_SPLIT_NATIONAL_ID = '^\d{6}\s?\d{5}$';
