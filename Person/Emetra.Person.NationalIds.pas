@@ -24,12 +24,14 @@ type
   end;
 
 const
+
   { GenderId constants, see also Emetra.Person.Interfaces.pas }
   GENDER_UNKNOWN = 0;
   GENDER_MALE    = 1;
   GENDER_FEMALE  = 2;
+
   { Default number of retries when generating NationalIds }
-  DEFAULT_RETRIES = 3;
+  DEFAULT_RETRIES = 5;
 
 implementation
 
