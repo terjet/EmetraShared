@@ -18,6 +18,8 @@ type
     class function Parse( const s: string; out ADOB: TDateTime; out AGenderId, ANumber: integer ): boolean;
     class function Valid( const s: string ): boolean; overload;
     class function PossibleDNumber( const s: string ): boolean;
+    class function PossibleHNumber( const s: string ): boolean;
+    class function PossibleFHNumber( const s: string ): boolean;
     class function Valid( const ADOB: TDateTime; const ANumber: variant; out ANumberAsInt, ASex: integer ): boolean; overload;
   end;
 
@@ -195,6 +197,16 @@ end;
 class function TNorwegianNationalId.PossibleDNumber( const s: string ): boolean;
 begin
   Result := ( Length( s ) = 11 ) and CharInSet( s[1], ['4', '5', '6', '7'] );
+end;
+
+class function TNorwegianNationalId.PossibleHNumber( const s: string ): boolean;
+begin
+  Result := ( Length( s ) = 11 ) and CharInSet( s[3], ['4', '5'] );
+end;
+
+class function TNorwegianNationalId.PossibleFHNumber( const s: string ): boolean;
+begin
+  Result := ( Length( s ) = 11 ) and CharInSet( s[1], ['8', '9'] );
 end;
 
 initialization
