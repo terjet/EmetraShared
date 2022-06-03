@@ -18,16 +18,20 @@ type
     class function Parse( const s: string; out ADOB: TDateTime; out AGenderId, ANumber: integer ): boolean;
     class function Valid( const s: string ): boolean; overload;
     class function PossibleDNumber( const s: string ): boolean;
+    class function PossibleHNumber( const s: string ): boolean;
+    class function PossibleFHNumber( const s: string ): boolean;
     class function Valid( const ADOB: TDateTime; const ANumber: variant; out ANumberAsInt, ASex: integer ): boolean; overload;
   end;
 
 const
+
   { GenderId constants, see also Emetra.Person.Interfaces.pas }
   GENDER_UNKNOWN = 0;
   GENDER_MALE    = 1;
   GENDER_FEMALE  = 2;
+
   { Default number of retries when generating NationalIds }
-  DEFAULT_RETRIES = 3;
+  DEFAULT_RETRIES = 5;
 
 implementation
 
@@ -110,7 +114,7 @@ end;
 
 class function TNorwegianNationalId.MaskLastFive( const s: string ): string;
 begin
-  Result := s.Substring( 1, 6 ) + '00000';
+  Result := s.Substring( 0, 6 ) + '00000';
 end;
 
 class function TNorwegianNationalId.Generate( ): string;
@@ -195,6 +199,16 @@ end;
 class function TNorwegianNationalId.PossibleDNumber( const s: string ): boolean;
 begin
   Result := ( Length( s ) = 11 ) and CharInSet( s[1], ['4', '5', '6', '7'] );
+end;
+
+class function TNorwegianNationalId.PossibleHNumber( const s: string ): boolean;
+begin
+  Result := ( Length( s ) = 11 ) and CharInSet( s[3], ['4', '5'] );
+end;
+
+class function TNorwegianNationalId.PossibleFHNumber( const s: string ): boolean;
+begin
+  Result := ( Length( s ) = 11 ) and CharInSet( s[1], ['8', '9'] );
 end;
 
 initialization
