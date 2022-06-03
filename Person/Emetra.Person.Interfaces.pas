@@ -164,6 +164,14 @@ type
     procedure SaveActiveCaseData( APerson: IPersonId );
   end;
 
+  IFMPerson = interface
+    ['{ADEF5DD6-36FD-4558-9C58-2DE8CB449872}']
+    { Property accessors }
+    function Get_FMEnabled: boolean;
+    { Properties }
+    property FMEnabled: boolean read Get_FMEnabled;
+  end;
+
 function SexToStr( const ASex: TSex ): string;
 
 const
