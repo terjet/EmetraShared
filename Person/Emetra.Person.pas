@@ -14,7 +14,7 @@ uses
   System.Classes, System.SysUtils;
 
 type
-  TPerson = class( TObservable, IPersonId, IPersonIdentity, IPerson, IPersonReadOnly, IObservable, IGeoAddress )
+  TPerson = class( TObservable, IPersonId, IPersonIdentity, IPerson, IPersonReadOnly, IObservable, IGeoAddress, IFMPerson )
   strict private
     FEventsEnabled: Boolean;
     FNationalId: string;
@@ -32,6 +32,7 @@ type
     fPhone: string;
     fEmployeeNumber: integer;
     fHPRNo: integer;
+    fFMEnabled: boolean;
   protected
     { Property accessors }
     function Get_Age: Double;
@@ -52,6 +53,7 @@ type
     function Get_StreetAddress: string;
     function Get_VisualId: string;
     function Get_YOB: integer;
+    function Get_FMEnabled: boolean;
     procedure Set_DOB( const Value: TDate );
     procedure Set_Email( const Value: string );
     procedure Set_FirstName( const Value: string );
@@ -65,6 +67,7 @@ type
     procedure Set_PostCode( const Value: string );
     procedure Set_City( const Value: string );
     procedure Set_Sex( Value: TSex );
+    procedure Set_FMEnabled( const Value: boolean );
   public
     Tag: integer;
     function DOBName( const AISODate: Boolean = false; const ASpacer: string = ' ' ): string; dynamic;
@@ -77,6 +80,7 @@ type
     procedure Clear; override;
     procedure SetAddress( const AStreetAddress, APostalCode, ACity: string );
     property EventsEnabled: Boolean read FEventsEnabled write FEventsEnabled;
+    property FMEnabled: boolean read Get_FMEnabled write Set_FMEnabled;
   published
     property Age: Double read Get_Age;
     property DOB: TDate read Get_DOB write Set_DOB;
@@ -173,6 +177,7 @@ begin
     fEmail := EmptyStr;
     fPhone := EmptyStr;
     fEmployeeNumber := 0;
+    fFMEnabled := false;
   finally
     EndUpdate;
   end;
@@ -199,6 +204,11 @@ end;
 function TPerson.Get_FirstName: string;
 begin
   Result := FFirstName;
+end;
+
+function TPerson.Get_FMEnabled: boolean;
+begin
+  Result := fFMEnabled;
 end;
 
 function TPerson.Get_FullName: string;
@@ -322,6 +332,11 @@ begin
   finally
     EndUpdate;
   end;
+end;
+
+procedure TPerson.Set_FMEnabled( const Value: boolean );
+begin
+  fFMEnabled := Value;
 end;
 
 procedure TPerson.Set_MiddleName( const Value: string );
