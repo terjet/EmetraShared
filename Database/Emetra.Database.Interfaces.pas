@@ -13,79 +13,82 @@ type
   { Exception raised when a the user canceled a login dialog }
   EDatabaseLoginCancelled = class( EAbort );
 
+  { Exception thrown when the database version is too old }
+  EDatabaseVersionTooOld = class( EDatabaseError );
+
   { Normal runtime exceptions }
   EDatabaseCommandFailed = class( EDatabaseError );
   EDatabaseQueryFailed = class( EDatabaseError );
 
   /// <summary>
-  ///   This exception should be raised when the database facade object tries
-  ///   to call a ILoginObserver's AfterLogin method, but this causes an
-  ///   exception. This can be because some submodule is unconfigured, doesn't
-  ///   have permissions for some operations etc. It can not be classified as
-  ///   an EDatabaseError, as it could be other reasons why this happens (e.g.
-  ///   disabled module etc).
+  /// This exception should be raised when the database facade object tries
+  /// to call a ILoginObserver's AfterLogin method, but this causes an
+  /// exception. This can be because some submodule is unconfigured, doesn't
+  /// have permissions for some operations etc. It can not be classified as
+  /// an EDatabaseError, as it could be other reasons why this happens (e.g.
+  /// disabled module etc).
   /// </summary>
   EDatabaseLoginObserverError = class( Exception );
 
   { Exceptions that should be caught during development }
   /// <summary>
-  ///   This exception is generated when a client attempts to run a query or a
-  ///   command against the database when
+  /// This exception is generated when a client attempts to run a query or a
+  /// command against the database when
   /// </summary>
   EDatabaseImplicitConnectError = class( EAssertionFailed );
   /// <summary>
-  ///   This exception is thrown when parameters to a query or command is not
-  ///   properly configured.
+  /// This exception is thrown when parameters to a query or command is not
+  /// properly configured.
   /// </summary>
   EDatabaseParameterError = class( EAssertionFailed );
   /// <summary>
-  ///   This exception is thrown when the database connection can not be
-  ///   established, because there is no single-sign-on, and username/login or
-  ///   other types of credentials can not be found.
+  /// This exception is thrown when the database connection can not be
+  /// established, because there is no single-sign-on, and username/login or
+  /// other types of credentials can not be found.
   /// </summary>
   EDatabaseCredentialsMissing = class( EAssertionFailed );
 
   /// <summary>
-  ///   This corresponds to a subset of <see href="https://docs.microsoft.com/en-us/sql/t-sql/functions/object-definition-transact-sql?view=sql-server-ver15">
-  ///   MS SQL Object Types</see>.
+  /// This corresponds to a subset of <see href="https://docs.microsoft.com/en-us/sql/t-sql/functions/object-definition-transact-sql?view=sql-server-ver15">
+  /// MS SQL Object Types</see>.
   /// </summary>
   TDbObjectType = (
     /// <summary>
-    ///   U = Table (user-defined)
+    /// U = Table (user-defined)
     /// </summary>
     otUserTable,
     /// <summary>
-    ///   V = View
+    /// V = View
     /// </summary>
     otView,
     /// <summary>
-    ///   FN = SQL scalar function
+    /// FN = SQL scalar function
     /// </summary>
     otScalarFunction,
     /// <summary>
-    ///   P = SQL Stored Procedure
+    /// P = SQL Stored Procedure
     /// </summary>
     otStoredProcedure,
     /// <summary>
-    ///   F = FOREIGN KEY constraint
+    /// F = FOREIGN KEY constraint
     /// </summary>
     otForeignKeyConstraint,
     /// <summary>
-    ///   A table valued function, which is a function that returns a table
-    ///   instead of a scalar value.
+    /// A table valued function, which is a function that returns a table
+    /// instead of a scalar value.
     /// </summary>
     otTableValuedFunction,
     /// <summary>
-    ///   SN = Synonym. A synonym to some other object, which can be of any
-    ///   type.
+    /// SN = Synonym. A synonym to some other object, which can be of any
+    /// type.
     /// </summary>
     otSynonym );
 
   /// <summary>
-  ///   An event signature to be triggered when a combination of username and
-  ///   password is needed. An event handler can present a dialogue to the
-  ///   user, read this from the registry etc. based on the needs of the
-  ///   applicaton.
+  /// An event signature to be triggered when a combination of username and
+  /// password is needed. An event handler can present a dialogue to the
+  /// user, read this from the registry etc. based on the needs of the
+  /// applicaton.
   /// </summary>
   TOnPasswordEvent = function( var AUsername, APassword: string ): boolean of object;
 
@@ -148,7 +151,7 @@ type
 
   IDatabaseUser = interface( IPersonReadOnly )
     ['{338F0CCD-2436-4926-8DC7-DEC86463A85A}']
-    { Accessors }
+    { Property Accessors }
     function Get_UserId: Integer;
     function Get_UserName: string;
     { Other members }
@@ -194,7 +197,7 @@ type
 
   IDatabaseName = interface
     ['{74246387-0269-4EB9-A9E3-D03E979048B4}']
-    { Accessors }
+    { Property Accessors }
     function Get_DbName: string;
     function Get_HostName: string;
     { Properties }
@@ -209,6 +212,8 @@ type
     function Get_DbName: string;
     function Get_DbVersion: Integer;
     function Get_EventScale: Integer;
+    function Get_ProductVersion: string;
+    function Get_ProductYear: Integer;
     function Get_ServerName: string;
     function Get_ServerVersion: string;
     { Other members }
@@ -216,6 +221,8 @@ type
     property DbName: string read Get_DbName;
     property DbVersion: Integer read Get_DbVersion;
     property EventScale: Integer read Get_EventScale;
+    property ProductVersion: string read Get_ProductVersion;
+    property ProductYear: Integer read Get_ProductYear;
     property ServerName: string read Get_ServerName;
     property ServerVersion: string read Get_ServerVersion;
   end;
@@ -249,6 +256,7 @@ type
     { Property accesors }
     function Get_Dataset: TDataset;
     { Other members }
+    function DatabaseObjectExists( const AQualifiedObjectName: string; const ADbObjectType: TDbObjectType ): boolean;
     function ExecuteAsync( const ASQL: string ): Integer; overload;
     function ExecuteAsync( const ASQL: string; const AParams: array of Variant ): Integer; overload;
     function ExecuteCommand( const ASQL: string ): Integer; overload;
