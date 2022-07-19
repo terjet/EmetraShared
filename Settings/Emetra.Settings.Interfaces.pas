@@ -120,6 +120,7 @@ type
     ['{2D269D74-2DD5-4923-95E6-52D629258AB3}']
     function Flag( const AFlag: string ): boolean; { Flags are just plain text parameters, e.g. run.exe "ReadOnly" }
     function Switch( const ASwitch: string ): boolean; { Switches are just plain text parameters with forward slash, e.g. /DoIt }
+    procedure Parse( const AParamStr: string ); { Allows parsing of a string, e.g. parameters from the commandline. }
   end;
 
 implementation
