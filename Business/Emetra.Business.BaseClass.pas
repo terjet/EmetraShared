@@ -42,6 +42,16 @@ type
 
 {$TYPEINFO ON}
 
+  /// <summary>
+  /// This a reference counted version of TCustomBusiness.  It allows a descending class
+  /// to check that it doesn't introduce visible members, which is an antipottern for reference
+  /// counted objects in Delphi.
+  /// </summary>
+  /// <remarks>
+  /// All TCustomBusinessReferenceCounted descendants need to have a logger injected upon
+  /// construction.
+  /// </remarks>
+  /// <seealso cref="TCustomBusiness" />
   TCustomBusinessReferenceCounted = class( TInterfacedObject )
   strict private
     fLog: ILog;
@@ -183,7 +193,7 @@ end;
 
 procedure TCustomBusinessReferenceCounted.BeforeDestruction;
 begin
-  Log.Event( '%s.BeforeDestruction called.', [ClassName] );
+  Log.Event( '%s.BeforeDestruction(): Called.', [ClassName] );
   inherited;
 end;
 
