@@ -174,7 +174,7 @@ begin
         Log.SilentSuccess( '%s.%s: Visibility OK for this method.', [ClassName, ourMethod.Name] );
     end
     else
-      Log.Event( '%s.%s: Method found in base class or in list of allowed methods.', [ClassName, ourMethod.Name] );
+      Log.Event( '%s.%s: Method found in base class or in list of allowed methods.', [ClassName, ourMethod.Name], ltDebug );
   end;
 
   for ourProperty in ourType.GetProperties do
@@ -187,7 +187,7 @@ begin
         Log.SilentSuccess( '%s.%s: Visibility OK for this property.', [ClassName, ourProperty.Name] );
     end
     else
-      Log.Event( '%s.%s: Property found in base class or in list of allowed properties.', [ClassName, ourProperty.Name] );
+      Log.Event( '%s.%s: Property found in base class or in list of allowed properties.', [ClassName, ourProperty.Name], ltDebug );
   end;
 end;
 
