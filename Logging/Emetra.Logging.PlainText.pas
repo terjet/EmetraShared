@@ -35,7 +35,6 @@ type
     fCriticalSection: TCriticalSection;
     fIndentLevel: Integer;
     fItems: TLogItemList;
-    fLogCallStack: boolean;
     fLogFileNumber: Integer;
     fLogFolderPresent: boolean;
     fSaveToFileOnDestroy: boolean;
@@ -269,7 +268,7 @@ procedure TPlainTextLog.EnterMethod( AInstance: TObject; const AMethodName: stri
 begin
   fCriticalSection.Enter;
   try
-    if MainThread and fLogCallStack then
+    if MainThread and LogCallStack then
     begin
       fItems.Add( TLogItem.Create( fIndentLevel, Format( '%s.%s: Enter', [AInstance.ClassName, AMethodName] ), ltInfo, mcCallStack, clCallStack ) );
       inc( fIndentLevel );
@@ -287,7 +286,7 @@ var
 begin
   fCriticalSection.Enter;
   try
-    if MainThread and fLogCallStack then
+    if MainThread and LogCallStack then
     begin
       if ( fIndentLevel <= MAX_NESTING ) and ( fIndentLevel >= 0 ) then
         msElapsed := fStopWatch[fIndentLevel].ElapsedMilliseconds

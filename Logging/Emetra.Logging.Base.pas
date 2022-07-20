@@ -66,10 +66,6 @@ type
       Note:
       This method uses a simple checksum as a digest of the message.  Usually the chance
       of collision is small, as the number of messages in an application is not that great. }
-  public
-    { Intialization }
-    constructor Create; dynamic;
-    destructor Destroy; override;
     { The three basic event types }
     function LogYesNo( const s: string; const ALevel: TLogLevel = ltMessage; const ACancel: boolean = false ): boolean;
     procedure Event( const s: string; const AParams: array of const; const ALogLevel: TLogLevel = ltInfo ); overload;
@@ -78,6 +74,10 @@ type
     property LogCallStack: boolean read Get_LogCallStack write Set_LogCallStack;
     property Threshold: TLogLevel read Get_Threshold write Set_Threshold;
     property ThresholdForDialog: TLogLevel read Get_ThresholdForDialog write Set_ThresholdForDialog;
+  public
+    { Intialization }
+    constructor Create; dynamic;
+    destructor Destroy; override;
   end;
 
 implementation
