@@ -193,7 +193,7 @@ end;
 
 procedure TCustomBusinessReferenceCounted.BeforeDestruction;
 begin
-  Log.Event( '%s.BeforeDestruction(): Called.', [ClassName] );
+  Log.Event( '%s.BeforeDestruction(): Called, RefCount = %d.', [ClassName, Self.RefCount] );
   inherited;
 end;
 
