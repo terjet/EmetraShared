@@ -33,14 +33,13 @@ type
     procedure EnterMethod( const AProcName: string );
     procedure LeaveMethod( const AProcName: string );
     procedure VerifyConstructorParameters; dynamic;
+    { Properties }
+    property Log: ILog read fLog;
   public
     { Initialization }
     constructor Create( ALog: ILog ); reintroduce;
-    { Properties }
-    property Log: ILog read fLog;
+    procedure BeforeDestruction; override;
   end;
-
-{$TYPEINFO ON}
 
   /// <summary>
   /// This a reference counted version of TCustomBusiness.  It allows a descending class
@@ -70,10 +69,22 @@ type
     procedure BeforeDestruction; override;
   end;
 
+  /// <summary>
+  /// This a component that has a log, and that gets automatically named (which means a single one should
+  /// have the same owner.
+  /// counted objects in Delphi.
+  /// </summary>
+  /// <remarks>
+  /// All TCustomBusinessComponent descendants need to have a logger injected upon
+  /// construction.
+  /// </remarks>
+  /// <seealso cref="TCustomBusiness" />
   TCustomBusinessComponent = class( TComponent )
   strict private
     fLog: ILog;
   protected
+    procedure EnterMethod( const AProcName: string );
+    procedure LeaveMethod( const AProcName: string );
     { Properties }
     property Log: ILog read fLog;
   public
@@ -86,14 +97,25 @@ implementation
 uses
   System.SysUtils, System.Rtti, System.TypInfo;
 
+resourcestring
+  LOG_DESTRUCTION = '%s.BeforeDestruction(): Called.';
+
 var
   BaseMethods: TStringList;
   ctx: TRttiContext;
+
+{$REGION 'TCustomBusiness'}
 
 constructor TCustomBusiness.Create( ALog: ILog );
 begin
   inherited Create;
   fLog := ALog;
+end;
+
+procedure TCustomBusiness.BeforeDestruction;
+begin
+  Log.Event( LOG_DESTRUCTION, [ClassName] );
+  inherited;
 end;
 
 procedure TCustomBusiness.EnterMethod( const AProcName: string );
@@ -130,12 +152,18 @@ begin
 end;
 
 {$ENDREGION}
-{ TCustomBusinessReferenceCounted }
+{$REGION 'TCustomBusinessReferenceCounted'}
 
 constructor TCustomBusinessReferenceCounted.Create( ALog: ILog );
 begin
   inherited Create;
   fLog := ALog;
+end;
+
+procedure TCustomBusinessReferenceCounted.BeforeDestruction;
+begin
+  Log.Event( LOG_DESTRUCTION + ' RefCount = %d.', [ClassName, Self.RefCount] );
+  inherited;
 end;
 
 procedure TCustomBusinessReferenceCounted.EnterMethod( const AProcName: string );
@@ -202,12 +230,6 @@ begin
   end;
 end;
 
-procedure TCustomBusinessReferenceCounted.BeforeDestruction;
-begin
-  Log.Event( '%s.BeforeDestruction(): Called, RefCount = %d.', [ClassName, Self.RefCount] );
-  inherited;
-end;
-
 procedure TCustomBusinessReferenceCounted.CheckAssigned( const AInterface: IInterface; const ANameOfInterface: string );
 const
   PROC_NAME = 'CheckAssigned';
@@ -226,60 +248,41 @@ begin
   end;
 end;
 
-{ TCustomBusinessComponent }
+{$ENDREGION}
+{$REGION 'TCustomBusinessReferenceCounted'}
 
 constructor TCustomBusinessComponent.Create( AOwner: TComponent; ALog: ILog );
 begin
   inherited Create( AOwner );
   fLog := ALog;
-  Name := ClassName.Substring( 1 );
+  name := ClassName.Substring( 1 );
+end;
+
+procedure TCustomBusinessComponent.EnterMethod( const AProcName: string );
+begin
+  fLog.EnterMethod( Self, AProcName );
+end;
+
+procedure TCustomBusinessComponent.LeaveMethod( const AProcName: string );
+begin
+  fLog.LeaveMethod( Self, AProcName );
 end;
 
 procedure TCustomBusinessComponent.BeforeDestruction;
 begin
-  fLog.Event( '%s.BeforeDestruction(): Called.', [ClassName] );
+  fLog.Event( LOG_DESTRUCTION, [ClassName] );
   inherited;
 end;
+
+{$ENDREGION}
 
 initialization
 
 BaseMethods := TStringList.Create( TDuplicates.dupError, true, false );
-with BaseMethods do
-begin
-  { These are the methods that are found in TInterfacedObject }
-  Add( 'AfterConstruction' );
-  Add( 'BeforeDestruction' );
-  Add( 'ClassInfo' );
-  Add( 'ClassName' );
-  Add( 'ClassNameIs' );
-  Add( 'ClassParent' );
-  Add( 'ClassType' );
-  Add( 'CleanupInstance' );
-  Add( 'Create' );
-  Add( 'DefaultHandler' );
-  Add( 'Destroy' );
-  Add( 'Dispatch' );
-  Add( 'DisposeOf' );
-  Add( 'Equals' );
-  Add( 'FieldAddress' );
-  Add( 'Free' );
-  Add( 'FreeInstance' );
-  Add( 'GetHashCode' );
-  Add( 'GetInterface' );
-  Add( 'GetInterfaceEntry' );
-  Add( 'GetInterfaceTable' );
-  Add( 'InheritsFrom' );
-  Add( 'InitInstance' );
-  Add( 'InstanceSize' );
-  Add( 'MethodAddress' );
-  Add( 'MethodName' );
-  Add( 'NewInstance' );
-  Add( 'QualifiedClassName' );
-  Add( 'SafeCallException' );
-  Add( 'ToString' );
-  Add( 'UnitName' );
-  Add( 'UnitScope' );
-end;
+BaseMethods.CommaText :=
+{ } 'AfterConstruction,BeforeDestruction,ClassInfo,ClassName,ClassNameIs,ClassParent,ClassType,CleanupInstance,Create,DefaultHandler,Destroy,' +
+{ } 'Dispatch,DisposeOf,Equals,FieldAddress,Free,FreeInstance,GetHashCode,GetInterface,GetInterfaceEntry,GetInterfaceTable,InheritsFrom,InitInstance,InstanceSize,' +
+{ } 'MethodAddress,MethodName,NewInstance,QualifiedClassName,SafeCallException,ToString,UnitName,UnitScope';
 
 ctx := TRttiContext.Create;
 
