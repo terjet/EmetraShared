@@ -35,7 +35,7 @@ type
     procedure VerifyConstructorParameters; dynamic;
   public
     { Initialization }
-    constructor Create( const ALog: ILog ); reintroduce;
+    constructor Create( ALog: ILog ); reintroduce;
     { Properties }
     property Log: ILog read fLog;
   end;
@@ -66,7 +66,18 @@ type
     property Log: ILog read fLog;
   public
     { Initialization }
-    constructor Create( const ALog: ILog ); reintroduce;
+    constructor Create( ALog: ILog ); reintroduce;
+    procedure BeforeDestruction; override;
+  end;
+
+  TCustomBusinessComponent = class( TComponent )
+  strict private
+    fLog: ILog;
+  protected
+    { Properties }
+    property Log: ILog read fLog;
+  public
+    constructor Create( AOwner: TComponent; ALog: ILog ); reintroduce;
     procedure BeforeDestruction; override;
   end;
 
@@ -79,7 +90,7 @@ var
   BaseMethods: TStringList;
   ctx: TRttiContext;
 
-constructor TCustomBusiness.Create( const ALog: ILog );
+constructor TCustomBusiness.Create( ALog: ILog );
 begin
   inherited Create;
   fLog := ALog;
@@ -121,7 +132,7 @@ end;
 {$ENDREGION}
 { TCustomBusinessReferenceCounted }
 
-constructor TCustomBusinessReferenceCounted.Create( const ALog: ILog );
+constructor TCustomBusinessReferenceCounted.Create( ALog: ILog );
 begin
   inherited Create;
   fLog := ALog;
@@ -213,6 +224,21 @@ begin
       GlobalLog.SilentError( errorMessage );
     raise EArgumentNilException.Create( errorMessage );
   end;
+end;
+
+{ TCustomBusinessComponent }
+
+constructor TCustomBusinessComponent.Create( AOwner: TComponent; ALog: ILog );
+begin
+  inherited Create( AOwner );
+  fLog := ALog;
+  Name := ClassName.Substring( 1 );
+end;
+
+procedure TCustomBusinessComponent.BeforeDestruction;
+begin
+  fLog.Event( '%s.BeforeDestruction(): Called.', [ClassName] );
+  inherited;
 end;
 
 initialization
