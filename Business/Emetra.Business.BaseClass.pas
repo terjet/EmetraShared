@@ -101,8 +101,8 @@ resourcestring
   LOG_DESTRUCTION = '%s.BeforeDestruction(): Called.';
 
 var
-  BaseMethods: TStringList;
-  ctx: TRttiContext;
+  methodsFromBaseClass: TStringList; // A list of methods that already exists in TInterfacedObject, almost all from TObject.
+  rttiContext: TRttiContext;
 
 {$REGION 'TCustomBusiness'}
 
@@ -180,7 +180,7 @@ function TCustomBusinessReferenceCounted.MethodAllowed( const AMethodName: strin
 var
   foundAt: Integer;
 begin
-  Result := BaseMethods.Find( AMethodName, foundAt );
+  Result := methodsFromBaseClass.Find( AMethodName, foundAt );
 end;
 
 procedure TCustomBusinessReferenceCounted.VerifyConstructorParameters;
@@ -278,16 +278,17 @@ end;
 
 initialization
 
-BaseMethods := TStringList.Create( TDuplicates.dupError, true, false );
-BaseMethods.CommaText :=
+methodsFromBaseClass := TStringList.Create( TDuplicates.dupError, true, false );
+methodsFromBaseClass.CommaText :=
 { } 'AfterConstruction,BeforeDestruction,ClassInfo,ClassName,ClassNameIs,ClassParent,ClassType,CleanupInstance,Create,DefaultHandler,Destroy,' +
 { } 'Dispatch,DisposeOf,Equals,FieldAddress,Free,FreeInstance,GetHashCode,GetInterface,GetInterfaceEntry,GetInterfaceTable,InheritsFrom,InitInstance,InstanceSize,' +
 { } 'MethodAddress,MethodName,NewInstance,QualifiedClassName,SafeCallException,ToString,UnitName,UnitScope';
 
-ctx := TRttiContext.Create;
+rttiContext := TRttiContext.Create;
 
 finalization
 
-ctx.Free;
+rttiContext.Free;
+methodsFromBaseClass.Free;
 
 end.
