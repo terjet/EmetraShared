@@ -226,7 +226,8 @@ end;
 function TCommandMediator.ExecuteCmd( const ACommand: ICommand ): boolean;
 const
   PROC_NAME              = 'ExecuteCmd';
-  WARN_UNHANDLED_COMMAND = LOG_CLASS_METHOD + 'No modules in the system responded to this command: "%s"';
+  WARN_UNHANDLED_COMMAND = LOG_CLASS_METHOD + 'No classes in the system want to handle this command: "%s".';
+  LOG_HANDLED_COMMAND    = LOG_CLASS_METHOD + 'The class "%s" is registered as receiver for the command: "%s".';
 var
   receiverObject: TObject;
   receiverInterface: ICommandReceiver;
@@ -240,6 +241,7 @@ begin
       Log.SilentError( WARN_UNHANDLED_COMMAND, [ClassName, PROC_NAME, ACommand.Name] )
     else if Supports( receiverObject, ICommandReceiver, receiverInterface ) then
       try
+        Log.Event( LOG_HANDLED_COMMAND, [ClassName, PROC_NAME, receiverObject.ClassName, ACommand.Name] );
         Result := receiverInterface.ExecuteCmd( ACommand );
       except
         on E: Exception do
