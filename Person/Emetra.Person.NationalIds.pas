@@ -21,6 +21,7 @@ type
     class function PossibleHNumber( const s: string ): boolean;
     class function PossibleFHNumber( const s: string ): boolean;
     class function Valid( const ADOB: TDateTime; const ANumber: variant; out ANumberAsInt, ASex: integer ): boolean; overload;
+    class function StableIdentifier( const s: string ): boolean;
   end;
 
 const
@@ -204,6 +205,11 @@ end;
 class function TNorwegianNationalId.PossibleHNumber( const s: string ): boolean;
 begin
   Result := ( Length( s ) = 11 ) and CharInSet( s[3], ['4', '5'] );
+end;
+
+class function TNorwegianNationalId.StableIdentifier( const s: string ): boolean;
+begin
+  Result := Valid( s ) and not( PossibleFHNumber( s ) or PossibleHNumber( s ) );
 end;
 
 class function TNorwegianNationalId.PossibleFHNumber( const s: string ): boolean;
