@@ -54,6 +54,8 @@ type
     function LogYesNo( const AMessage: string; const ALevel: TLogLevel = ltMessage; const ACancel: boolean = false ): boolean;
     procedure Event( const AMessage: string; const Args: array of const; const ALogType: TLogLevel = ltInfo ); overload; {
       Add a formatted message to the log }
+    procedure EventColor( const AColor: TColor; const s: string ); overload;
+    procedure EventColor( const AColor: TColor; const s: string; const AParams: array of const ); overload;
     { Call stack logging }
     procedure EnterMethod( AInstance: TObject; const AMethodName: string );
     procedure LeaveMethod( AInstance: TObject; const AMethodName: string );
@@ -420,6 +422,16 @@ begin
   finally
     fCriticalSection.Leave;
   end;
+end;
+
+procedure TPlainTextLog.EventColor(const AColor: TColor; const s: string; const AParams: array of const);
+begin
+  Event( Format( '$%.6x ', [AColor] ) +  s, AParams );
+end;
+
+procedure TPlainTextLog.EventColor(const AColor: TColor; const s: string);
+begin
+  Event( Format( '$%.6x ', [AColor] )+ s );
 end;
 
 procedure TPlainTextLog.Event( const AMessage: string; const Args: array of const; const ALogType: TLogLevel );
