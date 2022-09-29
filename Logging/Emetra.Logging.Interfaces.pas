@@ -170,6 +170,8 @@ type
     ///   The level for this log event.
     /// </param>
     procedure Event( const s: string; const AParams: array of const; const ALogLevel: TLogLevel = ltInfo ); overload;
+    procedure EventColor( const AColor: TColor; const s: string ); overload;
+    procedure EventColor( const AColor: TColor; const s: string; const AParams: array of const ); overload;
     procedure Event( s: string; const ALogLevel: TLogLevel = ltInfo ); overload;
     /// <summary>
     /// Overloaded version of SilentError.
