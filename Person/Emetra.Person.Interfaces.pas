@@ -116,7 +116,7 @@ type
     { Properties }
     property Person[AIndex: Integer]: IPersonReadOnly read Get_Person;
     property Count: Integer read Get_Count;
-    property Name: string read Get_Name;
+    property name: string read Get_Name;
     property Usable: boolean read Get_Usable;
   end;
 
@@ -171,7 +171,9 @@ function VisualId( const APerson: IPersonReadOnly ): string;
 function ShortId( const APerson: IPersonReadOnly ): string;
 
 const
+
   { Regular expressions for searching in a list of persons }
+
   RGX_DATE              = '^[0123]\d\.?[01]\d\.?(18|19|20)?\d{2}';
   RGX_VALID_DOB         = RGX_DATE + '$';
   RGX_VALID_NATIONAL_ID = '^\d{11}$';
