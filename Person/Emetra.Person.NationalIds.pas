@@ -8,6 +8,8 @@ uses
 type
   EInvalidNationalId = Exception;
 
+  TNationalIdType = ( idNone, idFNumber, idDNumber, idFHNumber, idHNumber );
+
   TNorwegianNationalId = class
   public
     class var RetryCount: integer;
@@ -22,9 +24,11 @@ type
     class function PossibleFHNumber( const s: string ): boolean;
     class function Valid( const ADOB: TDateTime; const ANumber: variant; out ANumberAsInt, ASex: integer ): boolean; overload;
     class function StableIdentifier( const s: string ): boolean;
+    class function NationalIdentifierType( const s: string ): TNationalIdType;
   end;
 
 const
+  NATIONAL_ID_NAMES: array [TNationalIdType] of string = ( 'XXX', 'FNR', 'DNR', 'FHN', 'HNR' );
 
   { GenderId constants, see also Emetra.Person.Interfaces.pas }
   GENDER_UNKNOWN = 0;
@@ -215,6 +219,20 @@ end;
 class function TNorwegianNationalId.PossibleFHNumber( const s: string ): boolean;
 begin
   Result := ( Length( s ) = 11 ) and CharInSet( s[1], ['8', '9'] );
+end;
+
+class function TNorwegianNationalId.NationalIdentifierType( const s: string ): TNationalIdType;
+begin
+  if not Valid( s ) then
+    Result := idNone
+  else if PossibleDNumber( s ) then
+    Result := idDNumber
+  else if PossibleHNumber( s ) then
+    Result := idHNumber
+  else if PossibleFHNumber( s ) then
+    Result := idFHNumber
+  else
+    Result := idFNumber;
 end;
 
 initialization
