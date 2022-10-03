@@ -61,7 +61,8 @@ type
     property VisualId: string read Get_VisualId;
   end;
 
-  IPersonDead = interface['{3F9B2C5F-981B-4BA7-BEED-985A64774004}']
+  IPersonDead = interface
+    ['{3F9B2C5F-981B-4BA7-BEED-985A64774004}']
     function IsDead: boolean;
     function DeathDate: TDate;
   end;
@@ -143,7 +144,7 @@ type
     { Exact matching }
     function TryMapDOBName( const ADOB: TDateTime; const AFirstName, ALastName: string; out APersonId: Integer ): boolean;
     function TryMapNationalId( const ANationalId: string; out APersonId: Integer ): boolean;
-    function TryMapUserName( const AUserName: string; out APersonId: integer ): boolean;
+    function TryMapUserName( const AUserName: string; out APersonId: Integer ): boolean;
     { Add and edit }
     function AddPerson( const APerson: IPersonReadOnly ): Integer; overload;
     function AddPerson( const ADOB: TDateTime; const AGenderId: Integer; const AFirstName, ALastName, ANationalId: string ): Integer; overload;
@@ -165,6 +166,9 @@ type
   end;
 
 function SexToStr( const ASex: TSex ): string;
+function StrToSex( const s: string ): TSex;
+function VisualId( const APerson: IPersonReadOnly ): string;
+function ShortId( const APerson: IPersonReadOnly ): string;
 
 const
   { Regular expressions for searching in a list of persons }
@@ -183,8 +187,26 @@ resourcestring
   StrMaleGender = 'Mann';
   StrFemaleGender = 'Kvinne';
   StrUnknownGender = 'Uspesifisert';
+  StrVisualIdNobody = '000000 00000 - Uidentifisert Person';
+
+resourcestring
+  StrDobFormat = 'ddmmyy';
+  StrNeutralGenderText = 'Person';
+  StrYear = 'år';
 
 implementation
+
+function StrToSex( const s: string ): TSex;
+begin
+  if ( s = '' ) or ( s = '0' ) then
+    Result := sexUnknown
+  else if CharInSet( s[1], ['M', 'm', '1'] ) then
+    Result := sexMale
+  else if CharInSet( s[1], ['F', 'f', 'K', 'k', '2'] ) then
+    Result := sexFemale
+  else
+    Result := sexUnknown;
+end;
 
 function SexToStr( const ASex: TSex ): string;
 begin
@@ -193,6 +215,25 @@ begin
     sexFemale: Result := StrFemaleGender;
   else Result := StrUnknownGender;
   end;
+end;
+
+function VisualId( const APerson: IPersonReadOnly ): string;
+begin
+  if not APerson.Valid then
+    Result := StrVisualIdNobody
+  else
+  begin
+    if APerson.NationalId = EmptyStr then
+      Result := DateToStr( APerson.DOB )
+    else
+      Result := Copy( APerson.NationalId, 1, 6 ) + ' ' + Copy( APerson.NationalId, 7, maxint );
+    Result := Trim( Result ) + ' - ' + APerson.FullName;
+  end;
+end;
+
+function ShortId( const APerson: IPersonReadOnly ): string;
+begin
+  Result := FormatDateTime( StrDobFormat, APerson.DOB ) + APerson.FirstName[1] + APerson.LastName[1];
 end;
 
 end.

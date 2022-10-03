@@ -14,7 +14,7 @@ uses
   System.Classes, System.SysUtils;
 
 type
-  TPerson = class( TObservable, IPersonId, IPersonIdentity, IPerson, IPersonReadOnly, IObservable, IGeoAddress )
+  TPerson = class( TObservable, IPersonId, IPersonIdentity, IPerson, IPersonReadOnly, IObservable, IPhysicalAddress )
   strict private
     FEventsEnabled: Boolean;
     FNationalId: string;
@@ -102,17 +102,6 @@ type
     property Email: string read fEmail write Set_Email;
     property Phone: string read Get_Phone write Set_Phone;
   end;
-
-resourcestring
-  StrDobFormat = 'ddmmyy';
-  StrNeutralGenderText = 'Person';
-  StrVisualIdNobody = '000000 00000 - Uidentifisert Person';
-  StrYear = 'år';
-
-var
-  SEX_STR: array [TSex] of string;
-
-function StrToSex( const s: string ): TSex;
 
 implementation
 
@@ -241,7 +230,7 @@ end;
 
 function TPerson.Get_SexStr: string;
 begin
-  Result := SEX_STR[FSex];
+  Result := SexToStr( FSex );
 end;
 
 function TPerson.Get_VisualId: string;
@@ -502,23 +491,5 @@ begin
 end;
 
 {$ENDREGION}
-
-function StrToSex( const s: string ): TSex;
-begin
-  if ( s = '' ) or ( s = '0' ) then
-    Result := sexUnknown
-  else if CharInSet( s[1], ['M', 'm', '1'] ) then
-    Result := sexMale
-  else if CharInSet( s[1], ['F', 'f', 'K', 'k', '2'] ) then
-    Result := sexFemale
-  else
-    Result := sexUnknown;
-end;
-
-initialization
-
-SEX_STR[sexMale] := StrMaleGender;
-SEX_STR[sexFemale] := StrFemaleGender;
-SEX_STR[sexUnknown] := StrNeutralGenderText;
 
 end.
