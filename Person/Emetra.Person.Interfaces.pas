@@ -116,7 +116,7 @@ type
     { Properties }
     property Person[AIndex: Integer]: IPersonReadOnly read Get_Person;
     property Count: Integer read Get_Count;
-    property name: string read Get_Name;
+    property Name: string read Get_Name;
     property Usable: boolean read Get_Usable;
   end;
 
