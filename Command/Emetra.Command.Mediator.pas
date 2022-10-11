@@ -111,6 +111,7 @@ type
     procedure AfterConstruction; override;
     procedure BeforeDestruction; override;
     { Other methods }
+    procedure UnregisterAll;
     /// <param name="ACommand">
     /// The command to pass on to a RegisterAsCommandReceiver handler.
     /// </param>
@@ -214,6 +215,11 @@ begin
     fRegisteredCommandHandlers.Add( upperCasedCommand, AReceiver );
     Log.Event( LOG_REGISTERED_NOW, [ClassName, PROC_NAME, AReceiver.ClassName, ACommandName, AReceiver.ClassName] );
   end;
+end;
+
+procedure TCommandMediator.UnregisterAll;
+begin
+  fRegisteredCommandHandlers.Clear;
 end;
 
 {$ENDREGION}
