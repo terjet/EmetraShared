@@ -12,7 +12,7 @@ type
   public
     class var RetryCount: integer;
     class function Generate( ): string; overload;
-    class function Generate( const ADOB: TDateTime; const AGenderId: integer; ASeed: integer = 0 ): string; overload;
+    class function Generate( const ADOB: TDateTime; const AGenderId: integer; AValidate: boolean; ASeed: integer = 0 ): string; overload;
     class function GenderId( const s: string ): integer;
     class function MaskLastFive( const s: string ): string;
     class function Parse( const s: string; out ADOB: TDateTime; out AGenderId, ANumber: integer ): boolean;
@@ -50,7 +50,7 @@ begin
     Result := 2 - StrToInt( s[9] ) mod 2;
 end;
 
-class function TNorwegianNationalId.Generate( const ADOB: TDateTime; const AGenderId: integer; ASeed: integer = 0 ): string;
+class function TNorwegianNationalId.Generate( const ADOB: TDateTime; const AGenderId: integer; AValidate: boolean; ASeed: integer = 0 ): string;
 var
   firstSix: string;
   nextThree: integer;
@@ -108,7 +108,7 @@ begin
     { We may have to retry several times to get a valid number }
     inc( retryCounter );
 
-  until Valid( Result ) or ( retryCounter >= RetryCount );
+  until ( AValidate = false ) or Valid( Result ) or ( retryCounter >= RetryCount );
 
 end;
 
@@ -119,7 +119,7 @@ end;
 
 class function TNorwegianNationalId.Generate( ): string;
 begin
-  Result := Generate( Now - Random( 365 * 110 ), 1 + Random( 2 ) );
+  Result := Generate( Now - Random( 365 * 110 ), 1 + Random( 2 ), true );
 end;
 
 class function TNorwegianNationalId.Valid( const s: string ): boolean;
